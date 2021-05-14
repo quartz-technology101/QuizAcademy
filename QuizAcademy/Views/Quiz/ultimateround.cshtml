@@ -1,0 +1,174 @@
+﻿@{
+    ViewBag.Title = "ultimateround";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main>
+    <div class="quiz">
+        <div class="quiz-title">
+            <h2>Ultimate Round</h2>
+            <div class="timer">
+                <p>0 : 20</p>
+            </div>
+
+        </div>
+        <div class="quiz-body">
+            <h1></h1>
+            <div class="options">
+                <button class="option1"></button>
+                <button class="option2"></button>
+                <button class="option3"></button>
+                <button class="option4"></button>
+            </div>
+
+
+
+        </div>
+    </div>
+    <div class="score">
+        <p>0</p>
+    </div>
+</main>
+<div class="result">
+    <h1>Ultimate Round Completed!</h1>
+    <h2>Your score is :<span> 0</span></h2>
+    <div class="buttons">
+        <button id="resultbutton" class="okay">Okay</button>
+        <button id="resultbutton" class="playagain">Play Again</button>
+    </div>
+</div>
+
+<footer>
+    <p>Question: 1 of 40</p>
+</footer>
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+
+            $(".result").hide();
+
+            var questionsUrl = "http://localhost:3661/api/questions";
+
+
+            $.getJSON(questionsUrl, function (data) {
+                var questions = data;
+                var q = 0;
+
+                var question = questions[q];
+                var questionInSentence = question.questionSentence;
+                var optionI = question.option1;
+                var optionII = question.option2;
+                var optionIII = question.option3;
+                var optionIV = question.option4;
+                var rightAnswer = question.correctAnswer;
+                var score = 0;
+
+
+
+                $(".quiz-body h1").text(questionInSentence);
+                $(".option1").text(optionI);
+                $(".option2").text(optionII);
+                $(".option3").text(optionIII);
+                $(".option4").text(optionIV);
+
+                $("button").click(function () {
+                    var clickedOption = $(this);
+                    clickedOption.attr('clicked', 'yes');
+                    if (clickedOption.attr('clicked') == 'yes')
+                        $("button").prop("disabled", true);
+
+                    var optionValue = clickedOption.text();
+
+                    if (optionValue === rightAnswer) {
+                        $(this).css({ "background": "#0ba605", "color": "white", "border-color": "white" });
+
+
+                        score = score + 1;
+                        $(".score p").text(score)
+                    }
+                    else {
+                        $(this).css({ "background": "#e80000", "color": "white", "border-color": "white" });
+                    }
+
+
+                    setTimeout(function () {
+                        $("button").prop("disabled", false);
+
+                        q = q + 1;
+                        var page = q + 1;
+
+                        if (page == 9) {
+                            $("body").css({ "background-color": "rgba(30,30,30,.86)", "transition": "1s" });
+                            $("main").hide();
+                            $("footer").hide();
+                            $(".result").show();
+                            $(".result h2 span").text(score);
+                        }
+
+                        $(".okay").click(function () {
+                            window.location.replace(".");
+                        });
+                        $(".playagain").click(function () {
+                            window.location.replace("./ultimate-round");
+                        });
+
+                        question = questions[q];
+                        questionInSentence = question.questionSentence;
+                        optionI = question.option1;
+                        optionII = question.option2;
+                        optionIII = question.option3;
+                        optionIV = question.option4;
+                        rightAnswer = question.correctAnswer;
+
+
+
+
+                        $(".quiz").animate({
+                            "margin-left": "+2px",
+                        }, 50, function () { $(this).removeAttr('style'); });
+
+
+                        clickedOption.css({ "background": "#fcfafa", "color": "#893667", "border-color": "#893667" });
+
+
+
+                        $(".quiz-body h1").text(questionInSentence);
+                        $(".option1").text(optionI);
+                        $(".option2").text(optionII);
+                        $(".option3").text(optionIII);
+                        $(".option4").text(optionIV);
+
+                        $("footer p").text("Question: " + page + " of 40");
+
+                    }, 1000);
+
+
+
+
+
+                });
+            });
+        });
+
+    </script>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
